@@ -1,10 +1,5 @@
-import promiseToCallback from 'promise-to-callback'
-
-const callbackNoop = function (err) {
-  if (err) {
-    throw err
-  }
-}
+const promiseToCallback = require('promise-to-callback')
+const callbackNoop = function (err) { if (err) throw err }
 
 /**
  * A generator that returns a function which, when passed a promise, can treat that promise as a node style callback.
@@ -14,7 +9,7 @@ const callbackNoop = function (err) {
  * @param {Object} context The context in which the fn is to be called, most often a this reference
  *
  */
-export default function nodeify (fn, context) {
+module.exports = function nodeify (fn, context) {
   return function () {
     // parse arguments
     const args = [].slice.call(arguments)

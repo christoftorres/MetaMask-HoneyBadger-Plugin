@@ -1,6 +1,6 @@
-import ObservableStore from 'obs-store'
-import PendingBalanceCalculator from '../lib/pending-balance-calculator'
-import { BN } from 'ethereumjs-util'
+const ObservableStore = require('obs-store')
+const PendingBalanceCalculator = require('../lib/pending-balance-calculator')
+const BN = require('ethereumjs-util').BN
 
 class BalanceController {
 
@@ -133,4 +133,4 @@ class BalanceController {
 
 }
 
-export default BalanceController
+module.exports = BalanceController

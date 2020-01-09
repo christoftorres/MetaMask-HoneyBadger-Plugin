@@ -1,10 +1,10 @@
-import { applyMiddleware, createStore } from 'redux'
-import thunkMiddleware from 'redux-thunk'
-import { createLogger } from 'redux-logger'
-
+const createStore = require('redux').createStore
+const applyMiddleware = require('redux').applyMiddleware
+const thunkMiddleware = require('redux-thunk').default
+const createLogger = require('redux-logger').createLogger
 const rootReducer = function () {}
 
-export default configureStore
+module.exports = configureStore
 
 const loggerMiddleware = createLogger()
 

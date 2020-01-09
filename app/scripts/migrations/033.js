@@ -7,9 +7,9 @@ Cleans up notices and assocated notice controller code
 
 */
 
-import clone from 'clone'
+const clone = require('clone')
 
-export default {
+module.exports = {
   version,
 
   migrate: async function (originalVersionedData) {

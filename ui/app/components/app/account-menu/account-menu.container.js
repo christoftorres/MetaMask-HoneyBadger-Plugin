@@ -11,32 +11,18 @@ import {
   showInfoPage,
   showModal,
 } from '../../../store/actions'
-import {
-  getAddressConnectedDomainMap,
-  getMetaMaskAccountsOrdered,
-  getMetaMaskKeyrings,
-  getOriginOfCurrentTab,
-  getSelectedAddress,
-} from '../../../selectors/selectors'
+import { getMetaMaskAccounts } from '../../../selectors/selectors'
 import AccountMenu from './account-menu.component'
 
-/**
- * The min amount of accounts to show search field
- */
-const SHOW_SEARCH_ACCOUNTS_MIN_COUNT = 5
-
 function mapStateToProps (state) {
-  const { metamask: { isAccountMenuOpen } } = state
-  const accounts = getMetaMaskAccountsOrdered(state)
+  const { metamask: { selectedAddress, isAccountMenuOpen, keyrings, identities } } = state
 
   return {
+    selectedAddress,
     isAccountMenuOpen,
-    addressConnectedDomainMap: getAddressConnectedDomainMap(state),
-    originOfCurrentTab: getOriginOfCurrentTab(state),
-    selectedAddress: getSelectedAddress(state),
-    keyrings: getMetaMaskKeyrings(state),
-    accounts,
-    shouldShowAccountsSearch: accounts.length >= SHOW_SEARCH_ACCOUNTS_MIN_COUNT,
+    keyrings,
+    identities,
+    accounts: getMetaMaskAccounts(state),
   }
 }
 
@@ -72,5 +58,5 @@ function mapDispatchToProps (dispatch) {
 
 export default compose(
   withRouter,
-  connect(mapStateToProps, mapDispatchToProps),
+  connect(mapStateToProps, mapDispatchToProps)
 )(AccountMenu)

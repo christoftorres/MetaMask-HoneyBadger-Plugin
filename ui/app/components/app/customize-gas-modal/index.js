@@ -1,30 +1,38 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { inherits } from 'util'
-import { connect } from 'react-redux'
-import BigNumber from 'bignumber.js'
-import * as actions from '../../../store/actions'
-import GasModalCard from './gas-modal-card'
+const Component = require('react').Component
+const PropTypes = require('prop-types')
+const h = require('react-hyperscript')
+const inherits = require('util').inherits
+const connect = require('react-redux').connect
+const BigNumber = require('bignumber.js')
+const actions = require('../../../store/actions')
+const GasModalCard = require('./gas-modal-card')
 import Button from '../../ui/button'
 
-import ethUtil from 'ethereumjs-util'
+const ethUtil = require('ethereumjs-util')
 
 import {
   updateSendErrors,
 } from '../../../ducks/send/send.duck'
 
-import { MIN_GAS_PRICE_DEC, MIN_GAS_LIMIT_DEC, MIN_GAS_PRICE_GWEI } from '../../../pages/send/send.constants'
-import { isBalanceSufficient } from '../../../pages/send/send.utils'
+const {
+  MIN_GAS_PRICE_DEC,
+  MIN_GAS_LIMIT_DEC,
+  MIN_GAS_PRICE_GWEI,
+} = require('../../../pages/send/send.constants')
 
-import {
+const {
+  isBalanceSufficient,
+} = require('../../../pages/send/send.utils')
+
+const {
   conversionUtil,
   multiplyCurrencies,
   conversionGreaterThan,
   conversionMax,
   subtractCurrencies,
-} from '../../../helpers/utils/conversion-util'
+} = require('../../../helpers/utils/conversion-util')
 
-import {
+const {
   getGasIsLoading,
   getForceGasMin,
   conversionRateSelector,
@@ -34,9 +42,12 @@ import {
   getCurrentAccountWithSendEtherInfo,
   getSelectedTokenToFiatRate,
   getSendMaxModeState,
-} from '../../../selectors/selectors'
+} = require('../../../selectors/selectors')
 
-import { getGasPrice, getGasLimit } from '../../../pages/send/send.selectors'
+const {
+  getGasPrice,
+  getGasLimit,
+} = require('../../../pages/send/send.selectors')
 
 function mapStateToProps (state) {
   const selectedToken = getSelectedToken(state)
@@ -105,9 +116,9 @@ CustomizeGasModal.contextTypes = {
   metricsEvent: PropTypes.func,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CustomizeGasModal)
+module.exports = connect(mapStateToProps, mapDispatchToProps)(CustomizeGasModal)
 
-CustomizeGasModal.prototype.UNSAFE_componentWillReceiveProps = function (nextProps) {
+CustomizeGasModal.prototype.componentWillReceiveProps = function (nextProps) {
   const currentState = getFreshState(this.props)
   const {
     gasPrice: currentGasPrice,
@@ -317,72 +328,69 @@ CustomizeGasModal.prototype.render = function () {
     toNumericBase: 'dec',
   })
 
-  if (gasIsLoading) {
-    return null
-  }
+  return !gasIsLoading && h('div.send-v2__customize-gas', {}, [
+    h('div.send-v2__customize-gas__content', {
+    }, [
+      h('div.send-v2__customize-gas__header', {}, [
 
-  const { t } = this.context
+        h('div.send-v2__customize-gas__title', this.context.t('customGas')),
 
-  return (
-    <div className="send-v2__customize-gas">
-      <div className="send-v2__customize-gas__content">
-        <div className="send-v2__customize-gas__header">
-          <div className="send-v2__customize-gas__title">
-            {this.context.t('customGas')}
-          </div>
-          <div
-            className="send-v2__customize-gas__close"
-            onClick={hideModal}
-          />
-        </div>
-        <div className="send-v2__customize-gas__body">
-          <GasModalCard
-            value={convertedGasPrice}
-            min={forceGasMin || MIN_GAS_PRICE_GWEI}
-            step={1}
-            onChange={value => this.convertAndSetGasPrice(value)}
-            title={t('gasPrice')}
-            copy={t('gasPriceCalculation')}
-            gasIsLoading={gasIsLoading}
-          />
-          <GasModalCard
-            value={convertedGasLimit}
-            min={1}
-            step={1}
-            onChange={value => this.convertAndSetGasLimit(value)}
-            title={t('gasLimit')}
-            copy={t('gasLimitCalculation')}
-            gasIsLoading={gasIsLoading}
-          />
-        </div>
-        <div className="send-v2__customize-gas__footer">
-          {error && (
-            <div className="send-v2__customize-gas__error-message">
-              {error}
-            </div>
-          )}
-          <div className="send-v2__customize-gas__revert" onClick={() => this.revert()}>
-            {t('revert')}
-          </div>
-          <div className="send-v2__customize-gas__buttons">
-            <Button
-              type="default"
-              className="send-v2__customize-gas__cancel"
-              onClick={hideModal}
-            >
-              {t('cancel')}
-            </Button>
-            <Button
-              type="secondary"
-              className="send-v2__customize-gas__save"
-              onClick={() => !error && this.save(newGasPrice, gasLimit, gasTotal)}
-              disabled={error}
-            >
-              {t('save')}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+        h('div.send-v2__customize-gas__close', {
+          onClick: hideModal,
+        }),
+
+      ]),
+
+      h('div.send-v2__customize-gas__body', {}, [
+
+        h(GasModalCard, {
+          value: convertedGasPrice,
+          min: forceGasMin || MIN_GAS_PRICE_GWEI,
+          step: 1,
+          onChange: value => this.convertAndSetGasPrice(value),
+          title: this.context.t('gasPrice'),
+          copy: this.context.t('gasPriceCalculation'),
+          gasIsLoading,
+        }),
+
+        h(GasModalCard, {
+          value: convertedGasLimit,
+          min: 1,
+          step: 1,
+          onChange: value => this.convertAndSetGasLimit(value),
+          title: this.context.t('gasLimit'),
+          copy: this.context.t('gasLimitCalculation'),
+          gasIsLoading,
+        }),
+
+      ]),
+
+      h('div.send-v2__customize-gas__footer', {}, [
+
+        error && h('div.send-v2__customize-gas__error-message', [
+          error,
+        ]),
+
+        h('div.send-v2__customize-gas__revert', {
+          onClick: () => this.revert(),
+        }, [this.context.t('revert')]),
+
+        h('div.send-v2__customize-gas__buttons', [
+          h(Button, {
+            type: 'default',
+            className: 'send-v2__customize-gas__cancel',
+            onClick: this.props.hideModal,
+          }, [this.context.t('cancel')]),
+          h(Button, {
+            type: 'secondary',
+            className: 'send-v2__customize-gas__save',
+            onClick: () => !error && this.save(newGasPrice, gasLimit, gasTotal),
+            disabled: error,
+          }, [this.context.t('save')]),
+        ]),
+
+      ]),
+
+    ]),
+  ])
 }

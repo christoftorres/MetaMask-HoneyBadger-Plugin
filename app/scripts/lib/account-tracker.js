@@ -7,22 +7,16 @@
  * on each new block.
  */
 
-import EthQuery from 'eth-query'
+const EthQuery = require('eth-query')
+const ObservableStore = require('obs-store')
+const log = require('loglevel')
+const pify = require('pify')
+const Web3 = require('web3')
+const SINGLE_CALL_BALANCES_ABI = require('single-call-balance-checker-abi')
 
-import ObservableStore from 'obs-store'
-import log from 'loglevel'
-import pify from 'pify'
-import Web3 from 'web3'
-import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
-import { bnToHex } from './util'
-import { MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE, KOVAN_CODE } from '../controllers/network/enums'
-
-import {
-  SINGLE_CALL_BALANCES_ADDRESS,
-  SINGLE_CALL_BALANCES_ADDRESS_RINKEBY,
-  SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN,
-  SINGLE_CALL_BALANCES_ADDRESS_KOVAN,
-} from '../controllers/network/contract-addresses'
+const { bnToHex } = require('./util')
+const { MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE, KOVAN_CODE } = require('../controllers/network/enums')
+const { SINGLE_CALL_BALANCES_ADDRESS, SINGLE_CALL_BALANCES_ADDRESS_RINKEBY, SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN, SINGLE_CALL_BALANCES_ADDRESS_KOVAN } = require('../controllers/network/contract-addresses')
 
 
 class AccountTracker {
@@ -130,9 +124,7 @@ class AccountTracker {
     // save accounts state
     this.store.updateState({ accounts })
     // fetch balances for the accounts if there is block number ready
-    if (!this._currentBlockNumber) {
-      return
-    }
+    if (!this._currentBlockNumber) return
     this._updateAccounts()
   }
 
@@ -166,9 +158,7 @@ class AccountTracker {
 
     // block gasLimit polling shouldn't be in account-tracker shouldn't be here...
     const currentBlock = await this._query.getBlockByNumber(blockNumber, false)
-    if (!currentBlock) {
-      return
-    }
+    if (!currentBlock) return
     const currentBlockGasLimit = currentBlock.gasLimit
     this.store.updateState({ currentBlockGasLimit })
 
@@ -228,9 +218,7 @@ class AccountTracker {
     // update accounts state
     const { accounts } = this.store.getState()
     // only populate if the entry is still present
-    if (!accounts[address]) {
-      return
-    }
+    if (!accounts[address]) return
     accounts[address] = result
     this.store.updateState({ accounts })
   }
@@ -261,4 +249,4 @@ class AccountTracker {
 
 }
 
-export default AccountTracker
+module.exports = AccountTracker

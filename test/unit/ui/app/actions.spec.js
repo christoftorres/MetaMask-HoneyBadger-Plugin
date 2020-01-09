@@ -2,25 +2,26 @@
 // Used to inspect long objects
 // util.inspect({JSON}, false, null))
 // const util = require('util')
-import assert from 'assert'
+const assert = require('assert')
+const sinon = require('sinon')
+const clone = require('clone')
+const nock = require('nock')
+const fetchMock = require('fetch-mock')
+const configureStore = require('redux-mock-store').default
+const thunk = require('redux-thunk').default
+const EthQuery = require('eth-query')
+const Eth = require('ethjs')
+const KeyringController = require('eth-keyring-controller')
 
-import sinon from 'sinon'
-import clone from 'clone'
-import nock from 'nock'
-import fetchMock from 'fetch-mock'
-import configureStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
-import EthQuery from 'eth-query'
-import Eth from 'ethjs'
-import KeyringController from 'eth-keyring-controller'
-import { createTestProviderTools } from '../../../stub/provider'
+const { createTestProviderTools } = require('../../../stub/provider')
 const provider = createTestProviderTools({ scaffold: {}}).provider
 
-import enLocale from '../../../../app/_locales/en/messages.json'
-import * as actions from '../../../../ui/app/store/actions'
-import MetaMaskController from '../../../../app/scripts/metamask-controller'
-import firstTimeState from '../../localhostState'
-import devState from '../../../data/2-state.json'
+const enLocale = require('../../../../app/_locales/en/messages.json')
+const actions = require('../../../../ui/app/store/actions')
+const MetaMaskController = require('../../../../app/scripts/metamask-controller')
+
+const firstTimeState = require('../../../unit/localhostState')
+const devState = require('../../../data/2-state.json')
 
 const middleware = [thunk]
 const mockStore = configureStore(middleware)
@@ -58,6 +59,7 @@ describe('Actions', () => {
 
     metamaskController.threeBoxController = {
       new3Box: sinon.spy(),
+      getThreeBoxAddress: sinon.spy(),
       getThreeBoxSyncingState: sinon.spy(),
     }
 
@@ -753,6 +755,7 @@ describe('Actions', () => {
         'domain': {
           'name': 'Ether Mainl',
           'version': '1',
+          'chainId': 1,
           'verifyingContract': '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
         },
         'message': {
@@ -770,12 +773,11 @@ describe('Actions', () => {
     }
 
     beforeEach(() => {
-      metamaskController.newUnsignedTypedMessage(msgParamsV3, null, 'V3')
+      metamaskController.newUnsignedTypedMessage(msgParamsV3, 'V3')
       messages = metamaskController.typedMessageManager.getUnapprovedMsgs()
       typedMessages = metamaskController.typedMessageManager.messages
       msgId = Object.keys(messages)[0]
       typedMessages[0].msgParams.metamaskId = parseInt(msgId)
-      signTypedMsgSpy = sinon.stub(background, 'signTypedMessage')
     })
 
     afterEach(() => {
@@ -784,6 +786,7 @@ describe('Actions', () => {
 
     it('calls signTypedMsg in background with no error', () => {
       const store = mockStore()
+      signTypedMsgSpy = sinon.stub(background, 'signTypedMessage')
 
       store.dispatch(actions.signTypedMsg(msgParamsV3))
       assert(signTypedMsgSpy.calledOnce)
@@ -797,6 +800,8 @@ describe('Actions', () => {
         { type: 'HIDE_LOADING_INDICATION' },
         { type: 'DISPLAY_WARNING', value: 'error' },
       ]
+
+      signTypedMsgSpy = sinon.stub(background, 'signTypedMessage')
 
       signTypedMsgSpy.callsFake((_, callback) => {
         callback(new Error('error'))
@@ -933,7 +938,7 @@ describe('Actions', () => {
 
   describe('#updateTransaction', () => {
 
-    let updateTransactionSpy
+    let updateTransactionSpy, updateTransactionParamsSpy
 
     const txParams = {
       'from': '0x1',
@@ -951,18 +956,22 @@ describe('Actions', () => {
 
     afterEach(() => {
       updateTransactionSpy.restore()
+      updateTransactionParamsSpy.restore()
     })
 
     it('updates transaction', async () => {
       const store = mockStore()
 
       updateTransactionSpy = sinon.spy(background, 'updateTransaction')
+      updateTransactionParamsSpy = sinon.spy(actions, 'updateTransactionParams')
+
+      const result = [ txData.id, txParams ]
 
       await store.dispatch(actions.updateTransaction(txData))
+      assert(updateTransactionSpy.calledOnce)
+      assert(updateTransactionParamsSpy.calledOnce)
 
-      const resultantActions = store.getActions()
-      assert.ok(updateTransactionSpy.calledOnce)
-      assert.deepEqual(resultantActions[1], { type: 'UPDATE_TRANSACTION_PARAMS', id: txData.id, value: txParams })
+      assert.deepEqual(updateTransactionParamsSpy.args[0], result)
     })
 
     it('rejects with error message', async () => {
@@ -1540,30 +1549,43 @@ describe('Actions', () => {
   })
 
   describe('#markPasswordForgotten', () => {
+    let markPasswordForgottenSpy, forgotPasswordSpy
+
+    beforeEach(() => {
+      markPasswordForgottenSpy = sinon.spy(background, 'markPasswordForgotten')
+      forgotPasswordSpy = sinon.spy(actions, 'forgotPassword')
+    })
+
+    afterEach(() => {
+      markPasswordForgottenSpy.restore()
+      forgotPasswordSpy.restore()
+    })
+
     it('calls markPasswordForgotten', () => {
       const store = mockStore()
-      const markPasswordForgottenSpy = sinon.stub(background, 'markPasswordForgotten').callsArg(0)
-
       store.dispatch(actions.markPasswordForgotten())
-
-      const resultantActions = store.getActions()
-      assert.deepEqual(resultantActions[1], { type: 'FORGOT_PASSWORD', value: true })
-      assert.ok(markPasswordForgottenSpy.calledOnce)
-      markPasswordForgottenSpy.restore()
+      assert(forgotPasswordSpy.calledOnce)
+      assert(markPasswordForgottenSpy.calledOnce)
     })
   })
 
   describe('#unMarkPasswordForgotten', () => {
+    let unMarkPasswordForgottenSpy, forgotPasswordSpy
+
+    beforeEach(() => {
+      unMarkPasswordForgottenSpy = sinon.stub(background, 'unMarkPasswordForgotten').returns(forgotPasswordSpy)
+      forgotPasswordSpy = sinon.spy(actions, 'forgotPassword')
+    })
+
+    afterEach(() => {
+      unMarkPasswordForgottenSpy.restore()
+      forgotPasswordSpy.restore()
+    })
+
     it('calls unMarkPasswordForgotten', async () => {
       const store = mockStore()
-      const unMarkPasswordForgottenSpy = sinon.stub(background, 'unMarkPasswordForgotten').callsArg(0)
-
-      await store.dispatch(actions.unMarkPasswordForgotten())
-
-      const resultantActions = store.getActions()
-      assert.deepEqual(resultantActions[0], { type: 'FORGOT_PASSWORD', value: false })
-      assert.ok(unMarkPasswordForgottenSpy.calledOnce)
-      unMarkPasswordForgottenSpy.restore()
+      store.dispatch(await actions.unMarkPasswordForgotten())
+      assert(unMarkPasswordForgottenSpy.calledOnce)
     })
   })
 })

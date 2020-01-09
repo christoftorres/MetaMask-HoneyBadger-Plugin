@@ -1,20 +1,18 @@
 const assert = require('assert')
 const webdriver = require('selenium-webdriver')
-
 const { By, until } = webdriver
 const {
-  checkBrowserForConsoleErrors,
   delay,
+} = require('./func')
+const {
+  checkBrowserForConsoleErrors,
   findElement,
   findElements,
   verboseReportOnFailure,
   setupFetchMocking,
   prepareExtensionForTesting,
 } = require('./helpers')
-const Ganache = require('./ganache')
 const enLocaleMessages = require('../../app/_locales/en/messages.json')
-
-const ganacheServer = new Ganache()
 
 describe('MetaMask', function () {
   let driver
@@ -28,14 +26,6 @@ describe('MetaMask', function () {
   this.bail(true)
 
   before(async function () {
-    await ganacheServer.start({
-      accounts: [
-        {
-          secretKey: '0x53CB0AB5226EEBF4D872113D98332C1555DC304443BEE1CF759D15798D3C55A9',
-          balance: 25000000000000000000,
-        },
-      ],
-    })
     const result = await prepareExtensionForTesting()
     driver = result.driver
     await setupFetchMocking(driver)
@@ -56,7 +46,6 @@ describe('MetaMask', function () {
   })
 
   after(async function () {
-    await ganacheServer.quit()
     await driver.quit()
   })
 

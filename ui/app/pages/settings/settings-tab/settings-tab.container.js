@@ -1,8 +1,10 @@
 import SettingsTab from './settings-tab.component'
 import { compose } from 'recompose'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import {
   setCurrentCurrency,
+  displayWarning,
   setUseBlockie,
   updateCurrentLocale,
   setUseNativeCurrencyAsPrimaryCurrencyPreference,
@@ -35,6 +37,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     setCurrentCurrency: currency => dispatch(setCurrentCurrency(currency)),
+    displayWarning: warning => dispatch(displayWarning(warning)),
     setUseBlockie: value => dispatch(setUseBlockie(value)),
     updateCurrentLocale: key => dispatch(updateCurrentLocale(key)),
     setUseNativeCurrencyAsPrimaryCurrencyPreference: value => {
@@ -45,5 +48,6 @@ const mapDispatchToProps = dispatch => {
 }
 
 export default compose(
+  withRouter,
   connect(mapStateToProps, mapDispatchToProps)
 )(SettingsTab)

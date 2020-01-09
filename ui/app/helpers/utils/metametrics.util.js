@@ -1,6 +1,6 @@
 /* eslint camelcase: 0 */
 
-import ethUtil from 'ethereumjs-util'
+const ethUtil = require('ethereumjs-util')
 
 const inDevelopment = process.env.NODE_ENV === 'development'
 
@@ -172,8 +172,8 @@ function composeUrl (config) {
   return [ base, e_c, e_a, e_n, cvar, action_name, urlref, dimensions, url, _id, rand, pv_id, uid, new_visit ].join('')
 }
 
-export function sendMetaMetricsEvent (config) {
-  return fetch(composeUrl(config), {
+export function sendMetaMetricsEvent (config, permissionPreferences) {
+  return fetch(composeUrl(config, permissionPreferences), {
     'headers': {},
     'method': 'GET',
   })

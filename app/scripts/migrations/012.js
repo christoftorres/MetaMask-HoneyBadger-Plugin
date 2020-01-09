@@ -6,9 +6,9 @@ This migration modifies our notices to delete their body after being read.
 
 */
 
-import clone from 'clone'
+const clone = require('clone')
 
-export default {
+module.exports = {
   version,
 
   migrate: function (originalVersionedData) {

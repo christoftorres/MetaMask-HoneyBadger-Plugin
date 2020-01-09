@@ -1,20 +1,18 @@
 const assert = require('assert')
 const webdriver = require('selenium-webdriver')
-
 const { By, until } = webdriver
 const {
-  checkBrowserForConsoleErrors,
   delay,
+} = require('./func')
+const {
+  checkBrowserForConsoleErrors,
   findElement,
   findElements,
   verboseReportOnFailure,
   setupFetchMocking,
   prepareExtensionForTesting,
 } = require('./helpers')
-const Ganache = require('./ganache')
 const enLocaleMessages = require('../../app/_locales/en/messages.json')
-
-const ganacheServer = new Ganache()
 
 describe('MetaMask', function () {
   let driver
@@ -28,7 +26,6 @@ describe('MetaMask', function () {
   this.bail(true)
 
   before(async function () {
-    await ganacheServer.start()
     const result = await prepareExtensionForTesting({ responsive: true })
     driver = result.driver
     await setupFetchMocking(driver)
@@ -49,7 +46,6 @@ describe('MetaMask', function () {
   })
 
   after(async function () {
-    await ganacheServer.quit()
     await driver.quit()
   })
 
@@ -138,7 +134,7 @@ describe('MetaMask', function () {
     it('show account details dropdown menu', async () => {
       await driver.findElement(By.css('div.menu-bar__open-in-browser')).click()
       const options = await driver.findElements(By.css('div.menu.account-details-dropdown div.menu__item'))
-      assert.equal(options.length, 4) // HD Wallet type does not have to show the Remove Account option
+      assert.equal(options.length, 3) // HD Wallet type does not have to show the Remove Account option
       await delay(regularDelayMs)
     })
   })

@@ -1,9 +1,7 @@
-import extend from 'xtend'
-import txHelper from '../../../lib/tx-helper'
-import log from 'loglevel'
-import { actionConstants } from '../../store/actions'
-
-const actions = actionConstants
+const extend = require('xtend')
+const actions = require('../../store/actions')
+const txHelper = require('../../../lib/tx-helper')
+const log = require('loglevel')
 
 // Actions
 const SET_THREEBOX_LAST_UPDATED = 'metamask/app/SET_THREEBOX_LAST_UPDATED'
@@ -23,14 +21,14 @@ export default function reduceApp (state, action) {
     name = 'confTx'
   }
 
-  const defaultView = {
+  var defaultView = {
     name,
     detailView: null,
     context: selectedAddress,
   }
 
   // default state
-  const appState = extend({
+  var appState = extend({
     shouldClose: false,
     menuOpen: false,
     modal: {
@@ -77,9 +75,6 @@ export default function reduceApp (state, action) {
     loadingMethodData: false,
     show3BoxModalAfterImport: false,
     threeBoxLastUpdated: null,
-    requestAccountTabs: {},
-    openMetaMaskTabs: {},
-    currentWindowTab: {},
   }, state.appState)
 
   switch (action.type) {
@@ -152,7 +147,7 @@ export default function reduceApp (state, action) {
           state.appState.modal,
           { open: false },
           { modalState: { name: null, props: {} } },
-          { previousModalState: appState.modal.modalState },
+          { previousModalState: appState.modal.modalState},
         ),
       })
 
@@ -160,6 +155,31 @@ export default function reduceApp (state, action) {
     case actions.TRANSITION_FORWARD:
       return extend(appState, {
         transForward: true,
+      })
+
+    case actions.TRANSITION_BACKWARD:
+      return extend(appState, {
+        transForward: false,
+      })
+
+      // intialize
+
+    case actions.SHOW_CREATE_VAULT:
+      return extend(appState, {
+        currentView: {
+          name: 'createVault',
+        },
+        transForward: true,
+        warning: null,
+      })
+
+    case actions.SHOW_RESTORE_VAULT:
+      return extend(appState, {
+        currentView: {
+          name: 'restoreVault',
+        },
+        transForward: true,
+        forgottenPassword: true,
       })
 
     case actions.FORGOT_PASSWORD:
@@ -174,6 +194,12 @@ export default function reduceApp (state, action) {
       }
 
       return newState
+
+    case actions.SHOW_INIT_MENU:
+      return extend(appState, {
+        currentView: defaultView,
+        transForward: false,
+      })
 
     case actions.SHOW_CONFIG_PAGE:
       return extend(appState, {
@@ -193,6 +219,34 @@ export default function reduceApp (state, action) {
         transForward: action.value,
       })
 
+    case actions.SHOW_ADD_SUGGESTED_TOKEN_PAGE:
+      return extend(appState, {
+        currentView: {
+          name: 'add-suggested-token',
+          context: appState.currentView.context,
+        },
+        transForward: action.value,
+      })
+
+    case actions.SHOW_IMPORT_PAGE:
+      return extend(appState, {
+        currentView: {
+          name: 'import-menu',
+        },
+        transForward: true,
+        warning: null,
+      })
+
+    case actions.SHOW_NEW_ACCOUNT_PAGE:
+      return extend(appState, {
+        currentView: {
+          name: 'new-account-page',
+          context: action.formToSelect,
+        },
+        transForward: true,
+        warning: null,
+      })
+
     case actions.SET_NEW_ACCOUNT_FORM:
       return extend(appState, {
         currentView: {
@@ -205,6 +259,25 @@ export default function reduceApp (state, action) {
       return extend(appState, {
         currentView: {
           name: 'info',
+          context: appState.currentView.context,
+        },
+        transForward: true,
+      })
+
+    case actions.CREATE_NEW_VAULT_IN_PROGRESS:
+      return extend(appState, {
+        currentView: {
+          name: 'createVault',
+          inProgress: true,
+        },
+        transForward: true,
+        isLoading: true,
+      })
+
+    case actions.NEW_ACCOUNT_SCREEN:
+      return extend(appState, {
+        currentView: {
+          name: 'new-account',
           context: appState.currentView.context,
         },
         transForward: true,
@@ -230,6 +303,15 @@ export default function reduceApp (state, action) {
         warning: null,
       })
 
+    case actions.SHOW_NEW_KEYCHAIN:
+      return extend(appState, {
+        currentView: {
+          name: 'newKeychain',
+          context: appState.currentView.context,
+        },
+        transForward: true,
+      })
+
       // unlock
 
     case actions.UNLOCK_METAMASK:
@@ -248,7 +330,42 @@ export default function reduceApp (state, action) {
         warning: null,
       })
 
+    case actions.BACK_TO_INIT_MENU:
+      return extend(appState, {
+        warning: null,
+        transForward: false,
+        forgottenPassword: true,
+        currentView: {
+          name: 'InitMenu',
+        },
+      })
+
+    case actions.BACK_TO_UNLOCK_VIEW:
+      return extend(appState, {
+        warning: null,
+        transForward: true,
+        forgottenPassword: false,
+        currentView: {
+          name: 'UnlockScreen',
+        },
+      })
+      // reveal seed words
+
+    case actions.REVEAL_SEED_CONFIRMATION:
+      return extend(appState, {
+        currentView: {
+          name: 'reveal-seed-conf',
+        },
+        transForward: true,
+        warning: null,
+      })
+
       // accounts
+
+    case actions.SET_SELECTED_ACCOUNT:
+      return extend(appState, {
+        activeAddress: action.value,
+      })
 
     case actions.GO_HOME:
       return extend(appState, {
@@ -279,6 +396,20 @@ export default function reduceApp (state, action) {
         transForward: false,
       })
 
+    case actions.BACK_TO_ACCOUNT_DETAIL:
+      return extend(appState, {
+        currentView: {
+          name: 'accountDetail',
+          context: action.value,
+        },
+        accountDetail: {
+          subview: 'transactions',
+          accountExport: 'none',
+          privateKey: '',
+        },
+        transForward: false,
+      })
+
     case actions.SHOW_ACCOUNTS_PAGE:
       return extend(appState, {
         currentView: {
@@ -291,6 +422,11 @@ export default function reduceApp (state, action) {
         forgottenPassword: false,
       })
 
+    case actions.REVEAL_ACCOUNT:
+      return extend(appState, {
+        scrollToBottom: true,
+      })
+
     case actions.SHOW_CONF_TX_PAGE:
       return extend(appState, {
         currentView: {
@@ -298,6 +434,17 @@ export default function reduceApp (state, action) {
           context: action.id ? indexForPending(state, action.id) : 0,
         },
         transForward: action.transForward,
+        warning: null,
+        isLoading: false,
+      })
+
+    case actions.SHOW_CONF_MSG_PAGE:
+      return extend(appState, {
+        currentView: {
+          name: hasUnconfActions ? 'confTx' : 'account-detail',
+          context: 0,
+        },
+        transForward: true,
         warning: null,
         isLoading: false,
       })
@@ -335,6 +482,37 @@ export default function reduceApp (state, action) {
         })
       }
 
+    case actions.NEXT_TX:
+      return extend(appState, {
+        transForward: true,
+        currentView: {
+          name: 'confTx',
+          context: ++appState.currentView.context,
+          warning: null,
+        },
+      })
+
+    case actions.VIEW_PENDING_TX:
+      const context = indexForPending(state, action.value)
+      return extend(appState, {
+        transForward: true,
+        currentView: {
+          name: 'confTx',
+          context,
+          warning: null,
+        },
+      })
+
+    case actions.PREVIOUS_TX:
+      return extend(appState, {
+        transForward: false,
+        currentView: {
+          name: 'confTx',
+          context: --appState.currentView.context,
+          warning: null,
+        },
+      })
+
     case actions.TRANSACTION_ERROR:
       return extend(appState, {
         currentView: {
@@ -355,7 +533,7 @@ export default function reduceApp (state, action) {
 
     case actions.SET_HARDWARE_WALLET_DEFAULT_HD_PATH:
       const { device, path } = action.value
-      const newDefaults = { ...appState.defaultHdPaths }
+      const newDefaults = {...appState.defaultHdPaths}
       newDefaults[device] = path
 
       return extend(appState, {
@@ -382,6 +560,17 @@ export default function reduceApp (state, action) {
       return extend(appState, {
         isSubLoading: false,
       })
+    case actions.CLEAR_SEED_WORD_CACHE:
+      return extend(appState, {
+        transForward: true,
+        currentView: {},
+        isLoading: false,
+        accountDetail: {
+          subview: 'transactions',
+          accountExport: 'none',
+          privateKey: '',
+        },
+      })
 
     case actions.DISPLAY_WARNING:
       return extend(appState, {
@@ -394,12 +583,90 @@ export default function reduceApp (state, action) {
         warning: undefined,
       })
 
+    case actions.REQUEST_ACCOUNT_EXPORT:
+      return extend(appState, {
+        transForward: true,
+        currentView: {
+          name: 'accountDetail',
+          context: appState.currentView.context,
+        },
+        accountDetail: {
+          subview: 'export',
+          accountExport: 'requested',
+        },
+      })
+
+    case actions.EXPORT_ACCOUNT:
+      return extend(appState, {
+        accountDetail: {
+          subview: 'export',
+          accountExport: 'completed',
+        },
+      })
+
     case actions.SHOW_PRIVATE_KEY:
       return extend(appState, {
         accountDetail: {
           subview: 'export',
           accountExport: 'completed',
           privateKey: action.value,
+        },
+      })
+
+    case actions.BUY_ETH_VIEW:
+      return extend(appState, {
+        transForward: true,
+        currentView: {
+          name: 'buyEth',
+          context: appState.currentView.name,
+        },
+        identity: state.metamask.identities[action.value],
+        buyView: {
+          subview: 'Coinbase',
+          amount: '15.00',
+          buyAddress: action.value,
+          formView: {
+            coinbase: true,
+            shapeshift: false,
+          },
+        },
+      })
+
+    case actions.ONBOARDING_BUY_ETH_VIEW:
+      return extend(appState, {
+        transForward: true,
+        currentView: {
+          name: 'onboardingBuyEth',
+          context: appState.currentView.name,
+        },
+        identity: state.metamask.identities[action.value],
+      })
+
+    case actions.COINBASE_SUBVIEW:
+      return extend(appState, {
+        buyView: {
+          subview: 'Coinbase',
+          formView: {
+            coinbase: true,
+            shapeshift: false,
+          },
+          buyAddress: appState.buyView.buyAddress,
+          amount: appState.buyView.amount,
+        },
+      })
+
+    case actions.SHAPESHIFT_SUBVIEW:
+      return extend(appState, {
+        buyView: {
+          subview: 'ShapeShift',
+          formView: {
+            coinbase: false,
+            shapeshift: true,
+            marketinfo: action.value.marketinfo,
+            coinOptions: action.value.coinOptions,
+          },
+          buyAddress: action.value.buyAddress || appState.buyView.buyAddress,
+          amount: appState.buyView.amount || 0,
         },
       })
 
@@ -496,21 +763,6 @@ export default function reduceApp (state, action) {
         threeBoxLastUpdated: action.value,
       })
 
-    case actions.SET_REQUEST_ACCOUNT_TABS:
-      return extend(appState, {
-        requestAccountTabs: action.value,
-      })
-
-    case actions.SET_OPEN_METAMASK_TAB_IDS:
-      return extend(appState, {
-        openMetaMaskTabs: action.value,
-      })
-
-    case actions.SET_CURRENT_WINDOW_TAB:
-      return extend(appState, {
-        currentWindowTab: action.value,
-      })
-
     default:
       return appState
   }
@@ -545,3 +797,7 @@ function indexForPending (state, txId) {
   const index = unconfTxList.indexOf(match)
   return index
 }
+
+// function indexForLastPending (state) {
+//   return getUnconfActionList(state).length
+// }

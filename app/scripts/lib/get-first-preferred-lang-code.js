@@ -1,6 +1,6 @@
-import extension from 'extensionizer'
-import promisify from 'pify'
-import allLocales from '../../_locales/index.json'
+const extension = require('extensionizer')
+const promisify = require('pify')
+const allLocales = require('../../_locales/index.json')
 
 const getPreferredLocales = extension.i18n ? promisify(
   extension.i18n.getAcceptLanguages,
@@ -45,5 +45,5 @@ async function getFirstPreferredLangCode () {
   return existingLocaleCodes[firstPreferredLangCode] || 'en'
 }
 
-export default getFirstPreferredLangCode
+module.exports = getFirstPreferredLangCode
 

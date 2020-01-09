@@ -6,9 +6,9 @@ const version = 28
 normalizes txParams on unconfirmed txs
 
 */
-import clone from 'clone'
+const clone = require('clone')
 
-export default {
+module.exports = {
   version,
 
   migrate: async function (originalVersionedData) {
@@ -30,7 +30,7 @@ function transformState (state) {
       const tokens = newState.PreferencesController.tokens
       newState.PreferencesController.accountTokens = {}
       for (const identity in identities) {
-        newState.PreferencesController.accountTokens[identity] = { 'mainnet': tokens }
+        newState.PreferencesController.accountTokens[identity] = {'mainnet': tokens}
       }
       newState.PreferencesController.tokens = []
     }

@@ -1,10 +1,10 @@
 const version = 32
-import clone from 'clone'
+const clone = require('clone')
 
 /**
  * The purpose of this migration is to set the {@code completedUiMigration} flag based on the user's UI preferences
  */
-export default {
+module.exports = {
   version,
   migrate: async function (originalVersionedData) {
     const versionedData = clone(originalVersionedData)

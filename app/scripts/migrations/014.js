@@ -6,9 +6,9 @@ This migration removes provider from config and moves it too NetworkController.
 
 */
 
-import clone from 'clone'
+const clone = require('clone')
 
-export default {
+module.exports = {
   version,
 
   migrate: function (originalVersionedData) {

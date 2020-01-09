@@ -1,6 +1,6 @@
 const version = 39
-import clone from 'clone'
-import ethUtil from 'ethereumjs-util'
+const clone = require('clone')
+const ethUtil = require('ethereumjs-util')
 
 const DAI_V1_CONTRACT_ADDRESS = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359'
 const DAI_V1_TOKEN_SYMBOL = 'DAI'
@@ -19,7 +19,7 @@ function isOldDai (token = {}) {
  * Maker's upgrade to Multi-Collateral Dai and this migration renames the token
  * at the old address.
  */
-export default {
+module.exports = {
   version,
   migrate: async function (originalVersionedData) {
     const versionedData = clone(originalVersionedData)

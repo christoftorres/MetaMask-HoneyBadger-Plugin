@@ -2,6 +2,9 @@ import { connect } from 'react-redux'
 import SendEther from './send.component'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'recompose'
+const {
+  getSelectedAddress,
+} = require('../../selectors/selectors')
 
 import {
   getAmountConversionRate,
@@ -15,6 +18,7 @@ import {
   getRecentBlocks,
   getSelectedToken,
   getSelectedTokenContract,
+  getSelectedTokenToFiatRate,
   getSendAmount,
   getSendEditingTransactionId,
   getSendHexDataFeatureFlagState,
@@ -27,7 +31,6 @@ import {
   getSendEnsResolutionError,
 } from './send.selectors'
 import {
-  getSelectedAddress,
   getAddressBook,
 } from '../../selectors/selectors'
 import { getTokens } from './send-content/add-recipient/add-recipient.selectors'
@@ -61,30 +64,31 @@ import {
 
 function mapStateToProps (state) {
   return {
-    addressBook: getAddressBook(state),
     amount: getSendAmount(state),
     amountConversionRate: getAmountConversionRate(state),
     blockGasLimit: getBlockGasLimit(state),
     conversionRate: getConversionRate(state),
     editingTransactionId: getSendEditingTransactionId(state),
-    ensResolution: getSendEnsResolution(state),
-    ensResolutionError: getSendEnsResolutionError(state),
     from: getSendFromObject(state),
     gasLimit: getGasLimit(state),
     gasPrice: getGasPrice(state),
     gasTotal: getGasTotal(state),
     network: getCurrentNetwork(state),
     primaryCurrency: getPrimaryCurrency(state),
-    qrCodeData: getQrCodeData(state),
     recentBlocks: getRecentBlocks(state),
     selectedAddress: getSelectedAddress(state),
     selectedToken: getSelectedToken(state),
     showHexData: getSendHexDataFeatureFlagState(state),
+    ensResolution: getSendEnsResolution(state),
+    ensResolutionError: getSendEnsResolutionError(state),
     to: getSendTo(state),
     toNickname: getSendToNickname(state),
     tokens: getTokens(state),
     tokenBalance: getTokenBalance(state),
     tokenContract: getSelectedTokenContract(state),
+    tokenToFiatRate: getSelectedTokenToFiatRate(state),
+    qrCodeData: getQrCodeData(state),
+    addressBook: getAddressBook(state),
   }
 }
 
@@ -123,7 +127,7 @@ function mapDispatchToProps (dispatch) {
     updateSendEnsResolutionError: (message) => dispatch(updateSendEnsResolutionError(message)),
     updateToNicknameIfNecessary: (to, toNickname, addressBook) => {
       if (isValidENSAddress(toNickname)) {
-        const addressBookEntry = addressBook.find(({ address }) => to === address) || {}
+        const addressBookEntry = addressBook.find(({ address}) => to === address) || {}
         if (!addressBookEntry.name !== toNickname) {
           dispatch(updateSendTo(to, addressBookEntry.name || ''))
         }

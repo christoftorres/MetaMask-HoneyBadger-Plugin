@@ -1,11 +1,11 @@
-import EventEmitter from 'events'
-import ObservableStore from 'obs-store'
-import createId from './random-id'
-import assert from 'assert'
-import { ethErrors } from 'eth-json-rpc-errors'
-import sigUtil from 'eth-sig-util'
-import log from 'loglevel'
-import jsonschema from 'jsonschema'
+const EventEmitter = require('events')
+const ObservableStore = require('obs-store')
+const createId = require('./random-id')
+const assert = require('assert')
+const { errors: rpcErrors } = require('eth-json-rpc-errors')
+const sigUtil = require('eth-sig-util')
+const log = require('loglevel')
+const jsonschema = require('jsonschema')
 
 /**
  * Represents, and contains data about, an 'eth_signTypedData' type signature request. These are created when a
@@ -25,7 +25,7 @@ import jsonschema from 'jsonschema'
  *
  */
 
-export default class TypedMessageManager extends EventEmitter {
+module.exports = class TypedMessageManager extends EventEmitter {
   /**
    * Controller in charge of managing - storing, adding, removing, updating - TypedMessage.
    */
@@ -58,9 +58,7 @@ export default class TypedMessageManager extends EventEmitter {
    */
   getUnapprovedMsgs () {
     return this.messages.filter(msg => msg.status === 'unapproved')
-      .reduce((result, msg) => {
-        result[msg.id] = msg; return result
-      }, {})
+      .reduce((result, msg) => { result[msg.id] = msg; return result }, {})
   }
 
   /**
@@ -81,7 +79,7 @@ export default class TypedMessageManager extends EventEmitter {
           case 'signed':
             return resolve(data.rawSig)
           case 'rejected':
-            return reject(ethErrors.provider.userRejectedRequest('MetaMask Message Signature: User denied message signature.'))
+            return reject(rpcErrors.eth.userRejectedRequest('MetaMask Message Signature: User denied message signature.'))
           case 'errored':
             return reject(new Error(`MetaMask Message Signature: ${data.error}`))
           default:
@@ -105,15 +103,13 @@ export default class TypedMessageManager extends EventEmitter {
     msgParams.version = version
     this.validateParams(msgParams)
     // add origin from request
-    if (req) {
-      msgParams.origin = req.origin
-    }
+    if (req) msgParams.origin = req.origin
 
     log.debug(`TypedMessageManager addUnapprovedMessage: ${JSON.stringify(msgParams)}`)
     // create txData obj with parameters and meta data
-    const time = (new Date()).getTime()
-    const msgId = createId()
-    const msgData = {
+    var time = (new Date()).getTime()
+    var msgId = createId()
+    var msgData = {
       id: msgId,
       msgParams: msgParams,
       time: time,
@@ -153,9 +149,7 @@ export default class TypedMessageManager extends EventEmitter {
         assert.ok('from' in params, 'Params must include a from field.')
         assert.equal(typeof params.from, 'string', 'From field must be a string.')
         assert.equal(typeof params.data, 'string', 'Data must be passed as a valid JSON string.')
-        assert.doesNotThrow(() => {
-          data = JSON.parse(params.data)
-        }, 'Data must be passed as a valid JSON string.')
+        assert.doesNotThrow(() => { data = JSON.parse(params.data) }, 'Data must be passed as a valid JSON string.')
         const validation = jsonschema.validate(data, sigUtil.TYPED_MESSAGE_SCHEMA)
         assert.ok(data.primaryType in data.types, `Primary type of "${data.primaryType}" has no type definition.`)
         assert.equal(validation.errors.length, 0, 'Data must conform to EIP-712 schema. See https://git.io/fNtcx.')
@@ -163,8 +157,6 @@ export default class TypedMessageManager extends EventEmitter {
         const activeChainId = parseInt(this.networkController.getNetworkState())
         chainId && assert.equal(chainId, activeChainId, `Provided chainId (${chainId}) must match the active chainId (${activeChainId})`)
         break
-      default:
-        assert.fail(`Unknown params.version ${params.version}`)
     }
   }
 
@@ -286,9 +278,7 @@ export default class TypedMessageManager extends EventEmitter {
    */
   _setMsgStatus (msgId, status) {
     const msg = this.getMsg(msgId)
-    if (!msg) {
-      throw new Error('TypedMessageManager - Message not found for id: "${msgId}".')
-    }
+    if (!msg) throw new Error('TypedMessageManager - Message not found for id: "${msgId}".')
     msg.status = status
     this._updateMsg(msg)
     this.emit(`${msgId}:${status}`, msg)

@@ -13,6 +13,7 @@ export default class TransactionBreakdown extends PureComponent {
   }
 
   static propTypes = {
+    transaction: PropTypes.object,
     className: PropTypes.string,
     nativeCurrency: PropTypes.string.isRequired,
     showFiat: PropTypes.bool,
@@ -24,6 +25,7 @@ export default class TransactionBreakdown extends PureComponent {
   }
 
   static defaultProps = {
+    transaction: {},
     showFiat: true,
   }
 
@@ -48,12 +50,10 @@ export default class TransactionBreakdown extends PureComponent {
           className="transaction-breakdown__row-title"
         >
           {typeof gas !== 'undefined'
-            ? (
-              <HexToDecimal
-                className="transaction-breakdown__value"
-                value={gas}
-              />
-            )
+            ? <HexToDecimal
+              className="transaction-breakdown__value"
+              value={gas}
+            />
             : '?'
           }
         </TransactionBreakdownRow>
@@ -72,15 +72,13 @@ export default class TransactionBreakdown extends PureComponent {
         }
         <TransactionBreakdownRow title={t('gasPrice')}>
           {typeof gasPrice !== 'undefined'
-            ? (
-              <CurrencyDisplay
-                className="transaction-breakdown__value"
-                currency={nativeCurrency}
-                denomination={GWEI}
-                value={gasPrice}
-                hideLabel
-              />
-            )
+            ? <CurrencyDisplay
+              className="transaction-breakdown__value"
+              currency={nativeCurrency}
+              denomination={GWEI}
+              value={gasPrice}
+              hideLabel
+            />
             : '?'
           }
         </TransactionBreakdownRow>

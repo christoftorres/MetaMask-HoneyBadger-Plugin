@@ -1,5 +1,5 @@
-import { BN } from 'ethereumjs-util'
-import { normalize } from 'eth-sig-util'
+const BN = require('ethereumjs-util').BN
+const normalize = require('eth-sig-util').normalize
 
 class PendingBalanceCalculator {
 
@@ -32,9 +32,7 @@ class PendingBalanceCalculator {
     ])
 
     const [ balance, pending ] = results
-    if (!balance) {
-      return undefined
-    }
+    if (!balance) return undefined
 
     const pendingValue = pending.reduce((total, tx) => {
       return total.add(this.calculateMaxCost(tx))
@@ -78,4 +76,4 @@ class PendingBalanceCalculator {
 
 }
 
-export default PendingBalanceCalculator
+module.exports = PendingBalanceCalculator

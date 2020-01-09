@@ -6,11 +6,10 @@ This migration breaks out the ShapeShiftController substate
 
 */
 
-import merge from 'deep-extend'
+const merge = require('deep-extend')
+const clone = require('clone')
 
-import clone from 'clone'
-
-export default {
+module.exports = {
   version,
 
   migrate: function (originalVersionedData) {

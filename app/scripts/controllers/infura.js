@@ -1,6 +1,6 @@
-import ObservableStore from 'obs-store'
-import extend from 'xtend'
-import log from 'loglevel'
+const ObservableStore = require('obs-store')
+const extend = require('xtend')
+const log = require('loglevel')
 
 // every ten minutes
 const POLLING_INTERVAL = 10 * 60 * 1000
@@ -39,4 +39,4 @@ class InfuraController {
   }
 }
 
-export default InfuraController
+module.exports = InfuraController

@@ -6,9 +6,9 @@ This migration removes the BlackListController from disk state
 
 */
 
-import clone from 'clone'
+const clone = require('clone')
 
-export default {
+module.exports = {
   version,
 
   migrate: function (originalVersionedData) {

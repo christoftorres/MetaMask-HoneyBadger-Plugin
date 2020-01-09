@@ -7,9 +7,9 @@ description of migration and what it does
 
 */
 
-import clone from 'clone'
+const clone = require('clone')
 
-export default {
+module.exports = {
   version,
 
   migrate: async function (originalVersionedData) {

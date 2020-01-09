@@ -6,11 +6,10 @@ This migration breaks out the TransactionManager substate
 
 */
 
-import extend from 'xtend'
+const extend = require('xtend')
+const clone = require('clone')
 
-import clone from 'clone'
-
-export default {
+module.exports = {
   version,
 
   migrate: function (originalVersionedData) {

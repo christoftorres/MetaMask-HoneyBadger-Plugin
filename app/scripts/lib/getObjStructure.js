@@ -1,6 +1,6 @@
-import clone from 'clone'
+const clone = require('clone')
 
-export default getObjStructure
+module.exports = getObjStructure
 
 // This will create an object that represents the structure of the given object
 // it replaces all values with the result of their type

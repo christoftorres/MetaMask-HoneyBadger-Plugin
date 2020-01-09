@@ -1,7 +1,7 @@
-import Config from './recipient-blacklist.js'
+const Config = require('./recipient-blacklist.js')
 
 /** @module*/
-export default {
+module.exports = {
   checkAccount,
 }
 

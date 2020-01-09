@@ -1,5 +1,5 @@
-import ObservableStore from 'obs-store'
-import extend from 'xtend'
+const ObservableStore = require('obs-store')
+const extend = require('xtend')
 
 class AppStateController {
   /**
@@ -7,8 +7,8 @@ class AppStateController {
    * @param opts
    */
   constructor (opts = {}) {
-    const { initState, onInactiveTimeout, preferencesStore } = opts
-    const { preferences } = preferencesStore.getState()
+    const {initState, onInactiveTimeout, preferencesStore} = opts
+    const {preferences} = preferencesStore.getState()
 
     this.onInactiveTimeout = onInactiveTimeout || (() => {})
     this.store = new ObservableStore(extend({
@@ -62,7 +62,7 @@ class AppStateController {
    * @private
    */
   _resetTimer () {
-    const { timeoutMinutes } = this.store.getState()
+    const {timeoutMinutes} = this.store.getState()
 
     if (this.timer) {
       clearTimeout(this.timer)
@@ -76,5 +76,5 @@ class AppStateController {
   }
 }
 
-export default AppStateController
+module.exports = AppStateController
 

@@ -1,8 +1,7 @@
-import Ganache from 'ganache-core'
-import nock from 'nock'
+const Ganache = require('ganache-core')
+const nock = require('nock')
 import Enzyme from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
-import log from 'loglevel'
+import Adapter from 'enzyme-adapter-react-15'
 
 nock.disableNetConnect()
 nock.enableNetConnect('localhost')
@@ -17,6 +16,8 @@ server.listen(8545, () => {
   console.log('Ganache Testrpc is running on "http://localhost:8545"')
 })
 
+// logging util
+var log = require('loglevel')
 log.setDefaultLevel(5)
 global.log = log
 
@@ -35,12 +36,8 @@ require('jsdom-global')()
 window.localStorage = {}
 
 // crypto.getRandomValues
-if (!window.crypto) {
-  window.crypto = {}
-}
-if (!window.crypto.getRandomValues) {
-  window.crypto.getRandomValues = require('polyfill-crypto.getrandomvalues')
-}
+if (!window.crypto) window.crypto = {}
+if (!window.crypto.getRandomValues) window.crypto.getRandomValues = require('polyfill-crypto.getrandomvalues')
 
 function enableFailureOnUnhandledPromiseRejection () {
   // overwrite node's promise with the stricter Bluebird promise
@@ -61,11 +58,9 @@ function enableFailureOnUnhandledPromiseRejection () {
         throw evt.detail.reason
       })
     } else {
-      const oldOHR = window.onunhandledrejection
+      var oldOHR = window.onunhandledrejection
       window.onunhandledrejection = function (evt) {
-        if (typeof oldOHR === 'function') {
-          oldOHR.apply(this, arguments)
-        }
+        if (typeof oldOHR === 'function') oldOHR.apply(this, arguments)
         throw evt.detail.reason
       }
     }

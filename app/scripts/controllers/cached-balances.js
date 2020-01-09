@@ -1,5 +1,5 @@
-import ObservableStore from 'obs-store'
-import extend from 'xtend'
+const ObservableStore = require('obs-store')
+const extend = require('xtend')
 
 /**
  * @typedef {Object} CachedBalancesOptions
@@ -80,4 +80,4 @@ class CachedBalancesController {
   }
 }
 
-export default CachedBalancesController
+module.exports = CachedBalancesController

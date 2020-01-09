@@ -1,13 +1,15 @@
 const version = 37
-import clone from 'clone'
-import { util } from 'gaba'
+const clone = require('clone')
+const {
+  util,
+} = require('gaba')
 
 /**
  * The purpose of this migration is to update the address book state
  * to the new schema with chainId as a key.
  * and to add the isEns flag to all entries
  */
-export default {
+module.exports = {
   version,
   migrate: async function (originalVersionedData) {
     const versionedData = clone(originalVersionedData)

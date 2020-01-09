@@ -8,9 +8,9 @@ whos nonce is too high
 
 */
 
-import clone from 'clone'
+const clone = require('clone')
 
-export default {
+module.exports = {
   version,
 
   migrate: function (originalVersionedData) {
@@ -35,9 +35,7 @@ function transformState (state) {
     const transactions = newState.TransactionController.transactions
 
     newState.TransactionController.transactions = transactions.map((txMeta, _, txList) => {
-      if (txMeta.status !== 'submitted') {
-        return txMeta
-      }
+      if (txMeta.status !== 'submitted') return txMeta
 
       const confirmedTxs = txList.filter((tx) => tx.status === 'confirmed')
         .filter((tx) => tx.txParams.from === txMeta.txParams.from)

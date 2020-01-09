@@ -3,6 +3,7 @@ import { compose } from 'recompose'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
+  updateAndSetCustomRpc,
   displayWarning,
   setFeatureFlag,
   showModal,
@@ -11,9 +12,8 @@ import {
   setThreeBoxSyncingPermission,
   turnThreeBoxSyncingOnAndInitialize,
   setUseNonceField,
-  setIpfsGateway,
 } from '../../../store/actions'
-import { preferencesSelector } from '../../../selectors/selectors'
+import {preferencesSelector} from '../../../selectors/selectors'
 
 export const mapStateToProps = state => {
   const { appState: { warning }, metamask } = state
@@ -25,7 +25,6 @@ export const mapStateToProps = state => {
     threeBoxSyncingAllowed,
     threeBoxDisabled,
     useNonceField,
-    ipfsGateway,
   } = metamask
   const { showFiatInTestnets, autoLogoutTimeLimit } = preferencesSelector(state)
 
@@ -38,13 +37,13 @@ export const mapStateToProps = state => {
     threeBoxSyncingAllowed,
     threeBoxDisabled,
     useNonceField,
-    ipfsGateway,
   }
 }
 
 export const mapDispatchToProps = dispatch => {
   return {
     setHexDataFeatureFlag: shouldShow => dispatch(setFeatureFlag('sendHexData', shouldShow)),
+    setRpcTarget: (newRpc, chainId, ticker, nickname) => dispatch(updateAndSetCustomRpc(newRpc, chainId, ticker, nickname)),
     displayWarning: warning => dispatch(displayWarning(warning)),
     showResetAccountConfirmationModal: () => dispatch(showModal({ name: 'CONFIRM_RESET_ACCOUNT' })),
     setAdvancedInlineGasFeatureFlag: shouldShow => dispatch(setFeatureFlag('advancedInlineGas', shouldShow)),
@@ -61,9 +60,6 @@ export const mapDispatchToProps = dispatch => {
       } else {
         dispatch(setThreeBoxSyncingPermission(newThreeBoxSyncingState))
       }
-    },
-    setIpfsGateway: value => {
-      return dispatch(setIpfsGateway(value))
     },
   }
 }

@@ -1,9 +1,12 @@
-import EthQuery from 'ethjs-query'
-import { hexToBn, BnMultiplyByFraction, bnToHex } from '../../lib/util'
-import log from 'loglevel'
-import { addHexPrefix } from 'ethereumjs-util'
-import { SEND_ETHER_ACTION_KEY } from '../../../../ui/app/helpers/constants/transactions.js'
-
+const EthQuery = require('ethjs-query')
+const {
+  hexToBn,
+  BnMultiplyByFraction,
+  bnToHex,
+} = require('../../lib/util')
+const log = require('loglevel')
+const { addHexPrefix } = require('ethereumjs-util')
+const { SEND_ETHER_ACTION_KEY } = require('../../../../ui/app/helpers/constants/transactions.js')
 const SIMPLE_GAS_COST = '0x5208' // Hex for 21000, cost of a simple send.
 
 import { TRANSACTION_NO_CONTRACT_ERROR_KEY } from '../../../../ui/app/helpers/constants/error-keys'
@@ -139,16 +142,12 @@ class TxGasUtil {
     const bufferedGasLimitBn = initialGasLimitBn.muln(1.5)
 
     // if initialGasLimit is above blockGasLimit, dont modify it
-    if (initialGasLimitBn.gt(upperGasLimitBn)) {
-      return bnToHex(initialGasLimitBn)
-    }
+    if (initialGasLimitBn.gt(upperGasLimitBn)) return bnToHex(initialGasLimitBn)
     // if bufferedGasLimit is below blockGasLimit, use bufferedGasLimit
-    if (bufferedGasLimitBn.lt(upperGasLimitBn)) {
-      return bnToHex(bufferedGasLimitBn)
-    }
+    if (bufferedGasLimitBn.lt(upperGasLimitBn)) return bnToHex(bufferedGasLimitBn)
     // otherwise use blockGasLimit
     return bnToHex(upperGasLimitBn)
   }
 }
 
-export default TxGasUtil
+module.exports = TxGasUtil

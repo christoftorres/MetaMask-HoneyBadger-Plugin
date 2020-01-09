@@ -24,12 +24,11 @@ export default class ConfirmSeedPhrase extends PureComponent {
   }
 
   static propTypes = {
-    hideSeedPhraseBackupAfterOnboarding: PropTypes.func,
     history: PropTypes.object,
+    onSubmit: PropTypes.func,
     seedPhrase: PropTypes.string,
+    selectedAddress: PropTypes.string,
     initializeThreeBox: PropTypes.func,
-    setSeedPhraseBackedUp: PropTypes.func,
-    showingSeedPhraseBackupAfterOnboarding: PropTypes.bool,
   }
 
   state = {
@@ -194,6 +193,8 @@ export default class ConfirmSeedPhrase extends PureComponent {
                   key={index}
                   seedIndex={index}
                   index={index}
+                  draggingSeedIndex={this.state.draggingSeedIndex}
+                  setDraggingSeedIndex={this.setDraggingSeedIndex}
                   setHoveringIndex={this.setHoveringIndex}
                   onDrop={this.onDrop}
                   className="confirm-seed-phrase__seed-word--shuffled"

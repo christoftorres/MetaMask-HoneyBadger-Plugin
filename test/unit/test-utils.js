@@ -1,14 +1,16 @@
-import assert from 'assert'
+const assert = require('assert')
+
+module.exports = {
+  assertRejects,
+}
 
 // assert.rejects added in node v10
-export async function assertRejects (asyncFn, regExp) {
+async function assertRejects (asyncFn, regExp) {
   let f = () => {}
   try {
     await asyncFn()
   } catch (error) {
-    f = () => {
-      throw error
-    }
+    f = () => { throw error }
   } finally {
     assert.throws(f, regExp)
   }

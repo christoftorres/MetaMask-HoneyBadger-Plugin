@@ -1,12 +1,13 @@
-import React, { Component } from 'react'
-import { inherits } from 'util'
-import { withRouter } from 'react-router-dom'
-import { compose } from 'recompose'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import * as actions from '../../../store/actions'
-import { DEFAULT_ROUTE } from '../../../helpers/constants/routes'
-import { getMetaMaskAccounts } from '../../../selectors/selectors'
+const inherits = require('util').inherits
+const Component = require('react').Component
+const h = require('react-hyperscript')
+const { withRouter } = require('react-router-dom')
+const { compose } = require('recompose')
+const PropTypes = require('prop-types')
+const connect = require('react-redux').connect
+const actions = require('../../../store/actions')
+const { DEFAULT_ROUTE } = require('../../../helpers/constants/routes')
+const { getMetaMaskAccounts } = require('../../../selectors/selectors')
 import Button from '../../../components/ui/button'
 
 PrivateKeyImportView.contextTypes = {
@@ -14,7 +15,7 @@ PrivateKeyImportView.contextTypes = {
   metricsEvent: PropTypes.func,
 }
 
-export default compose(
+module.exports = compose(
   withRouter,
   connect(mapStateToProps, mapDispatchToProps)
 )(PrivateKeyImportView)
@@ -43,49 +44,47 @@ function PrivateKeyImportView () {
   Component.call(this)
 }
 
-PrivateKeyImportView.prototype.render = function PrivateKeyImportView () {
+PrivateKeyImportView.prototype.render = function () {
   const { error, displayWarning } = this.props
 
   return (
-    <div className="new-account-import-form__private-key">
-      <span className="new-account-create-form__instruction">
-        {this.context.t('pastePrivateKey')}
-      </span>
-      <div className="new-account-import-form__private-key-password-container">
-        <input
-          className="new-account-import-form__input-password"
-          type="password"
-          id="private-key-box"
-          onKeyPress={e => this.createKeyringOnEnter(e)}
-        />
-      </div>
-      <div className="new-account-import-form__buttons">
-        <Button
-          type="default"
-          large
-          className="new-account-create-form__button"
-          onClick={() => {
+    h('div.new-account-import-form__private-key', [
+
+      h('span.new-account-create-form__instruction', this.context.t('pastePrivateKey')),
+
+      h('div.new-account-import-form__private-key-password-container', [
+
+        h('input.new-account-import-form__input-password', {
+          type: 'password',
+          id: 'private-key-box',
+          onKeyPress: e => this.createKeyringOnEnter(e),
+        }),
+
+      ]),
+
+      h('div.new-account-import-form__buttons', {}, [
+
+        h(Button, {
+          type: 'default',
+          large: true,
+          className: 'new-account-create-form__button',
+          onClick: () => {
             displayWarning(null)
             this.props.history.push(DEFAULT_ROUTE)
-          }}
-        >
-          {this.context.t('cancel')}
-        </Button>
-        <Button
-          type="secondary"
-          large
-          className="new-account-create-form__button"
-          onClick={() => this.createNewKeychain()}
-        >
-          {this.context.t('import')}
-        </Button>
-      </div>
-      {
-        error
-          ? <span className="error">{error}</span>
-          : null
-      }
-    </div>
+          },
+        }, [this.context.t('cancel')]),
+
+        h(Button, {
+          type: 'secondary',
+          large: true,
+          className: 'new-account-create-form__button',
+          onClick: () => this.createNewKeychain(),
+        }, [this.context.t('import')]),
+
+      ]),
+
+      error ? h('span.error', error) : null,
+    ])
   )
 }
 

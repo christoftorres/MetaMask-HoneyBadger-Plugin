@@ -22,12 +22,15 @@ export default class UnitInput extends PureComponent {
   }
 
   static defaultProps = {
-    value: '',
     placeholder: '0',
   }
 
-  state = {
-    value: this.props.value,
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      value: props.value || '',
+    }
   }
 
   componentDidUpdate (prevProps) {
@@ -88,9 +91,7 @@ export default class UnitInput extends PureComponent {
               onChange={this.handleChange}
               onBlur={this.handleBlur}
               style={{ width: this.getInputWidth(value) }}
-              ref={ref => {
-                this.unitInput = ref
-              }}
+              ref={ref => { this.unitInput = ref }}
               disabled={maxModeOn}
             />
             {
