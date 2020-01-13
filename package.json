@@ -1,18 +1,18 @@
 {
-  "name": "recipient-address-auditor",
+  "name": "honeybadger-auditor",
   "version": "1.0.0",
-  "description": "Audits recipients of new transactions and updates metamask state with audit results",
+  "description": "Verifies if recipients of new transactions are honeypots and updates metamask state with audit results.",
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Christof Torres",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MetaMask/snaps-cli.git"
+    "url": "git+https://github.com/christoftorres/MetaMask-HoneyBadger-Plugin.git"
   },
   "web3Wallet": {
     "bundle": {
