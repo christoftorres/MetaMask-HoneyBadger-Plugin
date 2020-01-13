@@ -1,18 +1,10 @@
-## Front Matter
+### Browser Support
 
-### Platform Support
-
-- **Browser:** We currently only support **Chromium** browsers. Firefox and Opera may or may not work.
-- **OS:** We currently only support ***nix** environments. Windows may or may not work.
-
-We will eventually support the same browsers and operating systems as the production MetaMask extension.
-
-### Community
-You can check out the community Telegram channel here: https://t.me/mmsnaps
+We currently only support **Chromium** browsers. Firefox and Opera may or may not work.
 
 ## Installing the MetaMask Snaps Beta
 
-To get started, you'll need to clone and build our special fork of MetaMask:
+To get started, you'll need to clone and build the official MetaMask Snaps fork:
 
 ```bash
 git clone git@github.com:MetaMask/metamask-snaps-beta.git
