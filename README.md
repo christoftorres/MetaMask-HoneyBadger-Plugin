@@ -1,13 +1,12 @@
 ### Browser Support
 
-We currently only support **Chromium** browsers. Firefox and Opera may or may not work.
+Similar to the original MetaMask Snaps Beta, we currently only support **Chromium** browsers. Firefox and Opera may or may not work.
 
-## Installing the MetaMask Snaps Beta
+## Installing MetaMask Snaps Beta
 
-To get started, you'll need to clone and build the official MetaMask Snaps fork:
+To get started, you'll need to build our fork of the MetaMask Snaps Beta:
 
 ```bash
-git clone git@github.com:MetaMask/metamask-snaps-beta.git
 cd metamask-snaps-beta
 yarn install
 yarn start
@@ -21,7 +20,7 @@ Chrome will auto-reload the extension when it detects a change, but this auto-re
 
 ## Running HoneyBadger MetaMask Plugin
 
-To help you build HoneyBadger MetaMask plugin, you need to have [snaps-cli](https://github.com/MetaMask/snaps-cli) installed.
+To help you build the HoneyBadger MetaMask plugin, you need to have [snaps-cli](https://github.com/MetaMask/snaps-cli) installed.
 
 ```bash
 npm i -g snaps-cli

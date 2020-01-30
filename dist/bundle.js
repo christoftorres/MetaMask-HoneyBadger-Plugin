@@ -30,7 +30,7 @@ wallet.onMetaMaskEvent('newUnapprovedTx', async (txMeta) => {
     auditor: 'HoneyBadger Auditor',
     status: addressIsHoneypot ? 'warning' : 'approval',
     message: addressIsHoneypot
-      ? 'Recipient is a honeypot!'
+      ? 'Recipient has been flagged as a honeypot!'
       : 'Recipient is not a honeypot.',
   })
 })
