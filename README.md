@@ -7,7 +7,7 @@ Similar to the original MetaMask Snaps Beta, we currently only support **Chromiu
 To get started, you'll need to build our fork of the MetaMask Snaps Beta:
 
 ```bash
-cd metamask-snaps-beta
+cd MetaMask-Snaps-Beta
 yarn install
 yarn start
 ```
@@ -29,6 +29,7 @@ npm i -g snaps-cli
 Now build and load the plugin:
 
 ```bash
+cd HoneyBadger-Snap
 mm-snap build
 mm-snap serve
 ```
